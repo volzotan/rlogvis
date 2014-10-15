@@ -7,6 +7,18 @@
                 width: 1000px;
                 margin: 0 auto;
             }
+
+            text {
+                font: 10px sans-serif;
+            }
+
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: #000;
+                shape-rendering: crispEdges;
+            }
+
         </style>
     </head>
     <body>
@@ -20,57 +32,59 @@
             var chart_height = 600,
                 chart_width = 1000;
 
-            var offset = 50;
+            var xmargin = 50,
+                ymargin = 50;
 
             var startDate = new Date();
                 startDate.setFullYear(startDate.getFullYear() - 1);
 
-                console.log(new Date());
-
             var y = d3.scale.linear()
                 .domain([0, 7000])
-                .range([0, chart_height]);
+                .range([chart_height - 2*ymargin, 0]);
+
+            var ynoninv = d3.scale.linear()
+                .domain([0, 7000])
+                .range([0, chart_height - 2*ymargin]);
 
             var x = d3.time.scale()
                 .domain([startDate, new Date()])
-                .range([0, chart_width]);
+                .range([0, chart_width - 2*xmargin]);
 
+            //var color = d3.scale.threshold()
             var color = d3.scale.linear()
-                .domain([4, 6, 9])
-                .range(["red", "lightgreen", "darkgreen"]);
+                .domain([5, 6, 9])
+                .range(["red", "lightgreen", "green"]);
 
             var chart = d3.select(".chart")
-                .attr("width", chart_width)
-                .attr("height", chart_height);
+                  .attr("width", chart_width)
+                  .attr("height", chart_height)
+                .append("g")
+                  .attr("transform", "translate(" + xmargin + ", " + ymargin + ")");
 
             var bar = chart.selectAll("g")
                   .data(data)
                 .enter().append("g")
-                  .attr("transform", function(d, i) { return "translate(" + (i*10)+offset + ",0)"; });
+                  .attr("transform", function(d, i) { return "translate(" + (i*10) + ",0)"; });
 
             bar.selectAll("rect")
                   .data(function(d) { return d.data; })
                 .enter().append("rect")
                   .attr("width", 9)
-                  .attr("y", function(d) { return chart_height - y(d[0]) - y(d[1]); })
-                  .attr("height", function(d) { return y(d[1]); })
+                  .attr("y", function(d) { return y(d[0]) - ynoninv(d[1]); })
+                  .attr("height", function(d) { return ynoninv(d[1]); })
                   .style("fill", function(d) { return color(d[2]); });
+                  // .attr("y", function(d) { return chart_height - (2*ymargin) - y(d[0]) - y(d[1]); })
+                  // .attr("height", function(d) { return y(d[1]); })
+                  // .style("fill", function(d) { return color(d[2]); });
 
             var yAxis = d3.svg.axis()
                 .scale(y)
-                .orient("left")
-                .attr("transform", "translate(20, 0)");
-                //.tickFormat(d3.format(".2s"));
+                .orient("left");
 
             d3.select("svg").append("g")
                   .attr("class", "y axis")
+                  .attr("transform", "translate(40, " + ymargin + ")")
                   .call(yAxis)
-                .append("text")
-                  .attr("transform", "rotate(-90)")
-                  .attr("y", 6)
-                  .attr("dy", ".71em")
-                  .style("text-anchor", "end")
-                  .text("Population");
 
         </script>
     </body>
