@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+
+        <style>
+            .container {
+                width: 1000px;
+                margin: 0 auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <svg class="chart"></svg>
+        </div>
+
+        <script type="text/javascript">
+            var data = {{rundata_dump}};
+
+            var chart_height = 600,
+                chart_width = 1000;
+
+            var offset = 50;
+
+            var startDate = new Date();
+                startDate.setFullYear(startDate.getFullYear() - 1);
+
+                console.log(new Date());
+
+            var y = d3.scale.linear()
+                .domain([0, 7000])
+                .range([0, chart_height]);
+
+            var x = d3.time.scale()
+                .domain([startDate, new Date()])
+                .range([0, chart_width]);
+
+            var color = d3.scale.linear()
+                .domain([4, 6, 9])
+                .range(["red", "lightgreen", "darkgreen"]);
+
+            var chart = d3.select(".chart")
+                .attr("width", chart_width)
+                .attr("height", chart_height);
+
+            var bar = chart.selectAll("g")
+                  .data(data)
+                .enter().append("g")
+                  .attr("transform", function(d, i) { return "translate(" + (i*10)+offset + ",0)"; });
+
+            bar.selectAll("rect")
+                  .data(function(d) { return d.data; })
+                .enter().append("rect")
+                  .attr("width", 9)
+                  .attr("y", function(d) { return chart_height - y(d[0]) - y(d[1]); })
+                  .attr("height", function(d) { return y(d[1]); })
+                  .style("fill", function(d) { return color(d[2]); });
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .attr("transform", "translate(20, 0)");
+                //.tickFormat(d3.format(".2s"));
+
+            d3.select("svg").append("g")
+                  .attr("class", "y axis")
+                  .call(yAxis)
+                .append("text")
+                  .attr("transform", "rotate(-90)")
+                  .attr("y", 6)
+                  .attr("dy", ".71em")
+                  .style("text-anchor", "end")
+                  .text("Population");
+
+        </script>
+    </body>
+</html>
