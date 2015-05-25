@@ -24,6 +24,7 @@
     <body>
         <div class="container">
             <svg class="chart"></svg>
+            <svg class="graph"></svg>
         </div>
 
         <script type="text/javascript">
@@ -52,7 +53,7 @@
 
             //var color = d3.scale.threshold()
             var color = d3.scale.linear()
-                .domain([5, 6, 9])
+                .domain([5, 5.5, 8])
                 .range(["red", "lightgreen", "green"]);
 
             var chart = d3.select(".chart")
@@ -73,9 +74,6 @@
                   .attr("y", function(d) { return y(d[0]) - ynoninv(d[1]); })
                   .attr("height", function(d) { return ynoninv(d[1]); })
                   .style("fill", function(d) { return color(d[2]); });
-                  // .attr("y", function(d) { return chart_height - (2*ymargin) - y(d[0]) - y(d[1]); })
-                  // .attr("height", function(d) { return y(d[1]); })
-                  // .style("fill", function(d) { return color(d[2]); });
 
             var yAxis = d3.svg.axis()
                 .scale(y)
